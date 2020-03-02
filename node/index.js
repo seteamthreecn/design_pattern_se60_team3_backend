@@ -52,7 +52,6 @@ app.get("/ret_detail_list", (req, res) => {
 });
 // ---------------- end GET ret_detail_list --------------------------------
 
-
 // --------------- start GET ret_detail_sub_type -------------------------------
 app.get("/ret_detail_sub_type", (req, res) => {
   let sql = "SELECT * FROM ret_detail_sub_type;";
@@ -62,7 +61,6 @@ app.get("/ret_detail_sub_type", (req, res) => {
   });
 });
 // ---------------- end GET ret_detail_sub_type --------------------------------
-
 
 // --------------- start GET ret_wallet -------------------------------
 app.get("/ret_wallet", (req, res) => {
@@ -74,7 +72,6 @@ app.get("/ret_wallet", (req, res) => {
 });
 // ---------------- end GET ret_wallet --------------------------------
 
-
 // --------------- start GET ret_user -------------------------------
 app.get("/ret_user", (req, res) => {
   let sql = "SELECT * FROM ret_user;";
@@ -84,7 +81,6 @@ app.get("/ret_user", (req, res) => {
   });
 });
 // ---------------- end GET ret_user --------------------------------
-
 
 // --------------- start GET ret_wallet_detail_list -------------------------------
 app.get("/ret_wallet_detail_list", (req, res) => {
@@ -97,7 +93,6 @@ app.get("/ret_wallet_detail_list", (req, res) => {
 // ---------------- end GET ret_wallet_detail_list --------------------------------
 //-------------------------------------------------------- end GET ------------------------------------------------------------------
 
-
 //-------------------------------------------------------- start POST ------------------------------------------------------------------
 // --------------- start POST ret_detail_list -------------------------------
 app.post("/ret_detail_list", (req, res) => {
@@ -109,7 +104,6 @@ app.post("/ret_detail_list", (req, res) => {
 });
 // ---------------- end POST ret_detail_list --------------------------------
 
-
 // --------------- start POST ret_detail_sub_type -------------------------------
 app.post("/ret_detail_sub_type", (req, res) => {
   let sql = "SELECT * FROM ret_detail_sub_type;";
@@ -119,7 +113,6 @@ app.post("/ret_detail_sub_type", (req, res) => {
   });
 });
 // ---------------- end POST ret_detail_sub_type --------------------------------
-
 
 // --------------- start POST ret_wallet -------------------------------
 app.post("/ret_wallet", (req, res) => {
@@ -131,7 +124,6 @@ app.post("/ret_wallet", (req, res) => {
 });
 // ---------------- end POST ret_wallet --------------------------------
 
-
 // --------------- start POST ret_user -------------------------------
 app.post("/ret_user", (req, res) => {
   let sql = "SELECT * FROM ret_user;";
@@ -141,7 +133,6 @@ app.post("/ret_user", (req, res) => {
   });
 });
 // ---------------- end POST ret_user --------------------------------
-
 
 // --------------- start POST ret_wallet_detail_list -------------------------------
 app.post("/ret_wallet_detail_list", (req, res) => {
