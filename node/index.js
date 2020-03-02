@@ -31,7 +31,7 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE
 });
 
-db.connect(function(err) {
+db.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -152,4 +152,102 @@ app.post("/ret_wallet_detail_list", (req, res) => {
   });
 });
 // ---------------- end POST ret_wallet_detail_list --------------------------------
+
+
+// --------------- start POST insert_user -------------------------------
+app.post("/insert_user", (req, res) => {
+  let sql =
+    "INSERT INTO `ret_user`(user_id ,user_username, user_password, user_fname, user_lname, user_phone_no, user_email, user_guid_img)VALUES(NULL,'" +
+    req.body.user_username +
+    "','" +
+    req.body.user_password +
+    "','" +
+    req.body.user_fname +
+    "','" +
+    req.body.user_lname +
+    "','" +
+    req.body.user_phone_no +
+    "','" +
+    req.body.user_email +
+    "','" +
+    req.body.user_guid_img +
+    "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST insert_user --------------------------------
+
+// --------------- start POST insert_detail_sub_type -------------------------------
+app.post("/insert_detail_sub_type", (req, res) => {
+  let sql =
+    "INSERT INTO `ret_detail_sub_type`(dts_id  ,dts_name)VALUES(NULL,'" +
+    req.body.dts_name +
+    "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ----------------- end POST insert_detail_sub_type ---------------------------------
+
+
+// --------------- start POST insert_detail_list -------------------------------
+app.post("/insert_detail_list", (req, res) => {
+  let sql =
+    "INSERT INTO `ret_detail_list`(dtl_id  ,dtl_amount, dtl_date, dtl_type, dtl_dts_id)VALUES(NULL," +
+    req.body.dtl_amount +
+    ",'" +
+    req.body.dtl_date +
+    "','" +
+    req.body.dtl_type +
+    "'," +
+    req.body.dtl_dts_id +
+    ");";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ----------------- end POST insert_detail_list ---------------------------------
+
+
+// --------------- start POST insert_wallet -------------------------------
+app.post("/insert_wallet", (req, res) => {
+  let sql =
+    "INSERT INTO `ret_wallet`(wall_id   ,wall_total, wall_note, wall_grade, wall_user_id )VALUES(NULL," +
+    req.body.wall_total +
+    ",'" +
+    req.body.wall_note +
+    "','" +
+    req.body.wall_grade +
+    "'," +
+    req.body.wall_user_id +
+    ");";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ----------------- end POST insert_wallet ---------------------------------
+
+
+
+// --------------- start POST insert_wallet_detail_list -------------------------------
+app.post("/insert_wallet_detail_list", (req, res) => {
+  let sql =
+    "INSERT INTO `ret_wallet_detail_list`(wall_id   ,dtl_id )VALUES(" +
+    req.body.wall_id +
+    "," +
+    req.body.dtl_id +
+    ");";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ----------------- end POST insert_wallet_detail_list ---------------------------------
+
+
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
