@@ -248,6 +248,17 @@ app.post("/ret_user_by_user_username", (req, res) => {
 });
 // ---------------- end POST ret_user by user_name --------------------------------
 
+// --------------- start POST ret_user by user_id -------------------------------
+app.post("/ret_user_by_user_id", (req, res) => {
+  let sql =
+    "SELECT * FROM `ret_user` WHERE user_id = " + req.body.user_id + ";";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_user by user_id --------------------------------
+
 // --------------- start POST insert_user -------------------------------
 app.post("/update_ret_user", (req, res) => {
   let sql =
@@ -259,9 +270,9 @@ app.post("/update_ret_user", (req, res) => {
     req.body.user_lname +
     "',`user_email`='" +
     req.body.user_email +
-    "' WHERE `user_username` = '" +
-    req.body.user_username +
-    "';";
+    "' WHERE `user_id` = " +
+    req.body.user_id +
+    ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
