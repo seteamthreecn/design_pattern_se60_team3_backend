@@ -248,4 +248,25 @@ app.post("/ret_user_by_user_username", (req, res) => {
 });
 // ---------------- end POST ret_user by user_name --------------------------------
 
+// --------------- start POST insert_user -------------------------------
+app.post("/update_ret_user", (req, res) => {
+  let sql =
+    "UPDATE `ret_user` SET `user_username`='" +
+    req.body.user_username +
+    "',`user_fname`='" +
+    req.body.user_fname +
+    "',`user_lname`='" +
+    req.body.user_lname +
+    "',`user_email`='" +
+    req.body.user_email +
+    "' WHERE `user_username` = '" +
+    req.body.user_username +
+    "';";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST insert_user --------------------------------
+
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
