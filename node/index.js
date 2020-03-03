@@ -31,7 +31,7 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE
 });
 
-db.connect(function (err) {
+db.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -144,7 +144,6 @@ app.post("/ret_wallet_detail_list", (req, res) => {
 });
 // ---------------- end POST ret_wallet_detail_list --------------------------------
 
-
 // --------------- start POST insert_user -------------------------------
 app.post("/insert_user", (req, res) => {
   let sql =
@@ -183,7 +182,6 @@ app.post("/insert_detail_sub_type", (req, res) => {
 });
 // ----------------- end POST insert_detail_sub_type ---------------------------------
 
-
 // --------------- start POST insert_detail_list -------------------------------
 app.post("/insert_detail_list", (req, res) => {
   let sql =
@@ -202,7 +200,6 @@ app.post("/insert_detail_list", (req, res) => {
   });
 });
 // ----------------- end POST insert_detail_list ---------------------------------
-
 
 // --------------- start POST insert_wallet -------------------------------
 app.post("/insert_wallet", (req, res) => {
@@ -223,8 +220,6 @@ app.post("/insert_wallet", (req, res) => {
 });
 // ----------------- end POST insert_wallet ---------------------------------
 
-
-
 // --------------- start POST insert_wallet_detail_list -------------------------------
 app.post("/insert_wallet_detail_list", (req, res) => {
   let sql =
@@ -240,5 +235,17 @@ app.post("/insert_wallet_detail_list", (req, res) => {
 });
 // ----------------- end POST insert_wallet_detail_list ---------------------------------
 
+// --------------- start POST ret_user by user_username -------------------------------
+app.post("/ret_user_by_user_username", (req, res) => {
+  let sql =
+    "SELECT * FROM `ret_user` WHERE user_username  LIKE '" +
+    req.body.user_username +
+    "';";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_user by user_name --------------------------------
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
