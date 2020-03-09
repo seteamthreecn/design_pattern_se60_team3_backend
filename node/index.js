@@ -346,4 +346,46 @@ app.post('/upload', multipartMiddleware, (req, res) => {
 });
 // ---------------- end POST upload file --------------------------------
 
+
+// --------------- start POST insert_ret_detail_list -------------------------------
+app.post("/insert_ret_detail_list", (req, res) => {
+  let sql = "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id) VALUES ('"+ req.body.dtl_amount + "', '"+ req.body.dtl_date + "', '"+ req.body.dtl_type + "', '"+ req.body.dtl_dts_id + "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST update_ret_detail_list --------------------------------
+
+// --------------- start POST update_ret_detail_list -------------------------------
+app.post("/update_ret_detail_list", (req, res) => {
+  let sql = "UPDATE ret_detail_list SET (dtl_amount = '"+ req.body.dtl_amount + "', dtl_date = '"+ req.body.dtl_date + "', dtl_type = '"+ req.body.dtl_type + "', dtl_dts_id = '"+ req.body.dtl_dts_id + "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST update_ret_detail_list --------------------------------
+
+
+// --------------- start POST delete_ret_detail_list -------------------------------
+app.post("/delete_ret_detail_list", (req, res) => {
+  let sql = "DELETE FROM ret_detail_list WHERE (dtl_id = '"+ req.body.dtl_id + "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST delete_ret_detail_list --------------------------------
+
+// --------------- start POST ret_detail_list_by_dtl_id -------------------------------
+app.post("/ret_detail_list_by_dtl_id", (req, res) => {
+  let sql = "SELECT * FROM ret_detail_list WHERE (dtl_id = '"+ req.body.dtl_id + "');";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_detail_list_by_dtl_id --------------------------------
+
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
