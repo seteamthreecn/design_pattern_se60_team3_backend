@@ -31,7 +31,7 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE
 });
 
-db.connect(function(err) {
+db.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -82,15 +82,6 @@ app.get("/ret_user", (req, res) => {
 });
 // ---------------- end GET ret_user --------------------------------
 
-// --------------- start GET ret_wallet_detail_list -------------------------------
-app.get("/ret_wallet_detail_list", (req, res) => {
-  let sql = "SELECT * FROM ret_wallet_detail_list;";
-  let query = db.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
-});
-// ---------------- end GET ret_wallet_detail_list --------------------------------
 //-------------------------------------------------------- end GET ------------------------------------------------------------------
 
 //-------------------------------------------------------- start POST ------------------------------------------------------------------
@@ -154,15 +145,6 @@ app.post("/ret_user", (req, res) => {
 });
 // ---------------- end POST ret_user --------------------------------
 
-// --------------- start POST ret_wallet_detail_list -------------------------------
-app.post("/ret_wallet_detail_list", (req, res) => {
-  let sql = "SELECT * FROM ret_wallet_detail_list;";
-  let query = db.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
-});
-// ---------------- end POST ret_wallet_detail_list --------------------------------
 
 // --------------- start POST insert_user -------------------------------
 app.post("/insert_user", (req, res) => {
@@ -240,21 +222,6 @@ app.post("/insert_wallet", (req, res) => {
 });
 // ----------------- end POST insert_wallet ---------------------------------
 
-// --------------- start POST insert_wallet_detail_list -------------------------------
-app.post("/insert_wallet_detail_list", (req, res) => {
-  let sql =
-    "INSERT INTO `ret_wallet_detail_list`(wall_id   ,dtl_id )VALUES(" +
-    req.body.wall_id +
-    "," +
-    req.body.dtl_id +
-    ");";
-  let query = db.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
-});
-// ----------------- end POST insert_wallet_detail_list ---------------------------------
-
 // --------------- start POST ret_user by user_username -------------------------------
 app.post("/ret_user_by_user_username", (req, res) => {
   let sql =
@@ -299,5 +266,53 @@ app.post("/update_ret_user", (req, res) => {
   });
 });
 // ---------------- end POST insert_user --------------------------------
+
+
+
+// --------------- start POST ret_wallet (Full option) -------------------------------
+app.post("/ret_wallet_full_option", (req, res) => {
+  let sql =
+    "select" +
+    "(" +
+    "CASE " +
+    " WHEN MONTH(dtl.dtl_date) = 1 THEN 'ม.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 2 THEN 'ก.พ.'" +
+    " WHEN MONTH(dtl.dtl_date) = 3 THEN 'มี.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 4 THEN 'เม.ย.'" +
+    " WHEN MONTH(dtl.dtl_date) = 5 THEN 'พ.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 6 THEN 'มิ.ย.'" +
+    " WHEN MONTH(dtl.dtl_date) = 7 THEN 'ก.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 8 THEN 'ส.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 9 THEN 'ก.ย.'" +
+    " WHEN MONTH(dtl.dtl_date) = 10 THEN 'ต.ค.'" +
+    " WHEN MONTH(dtl.dtl_date) = 11 THEN 'พ.ย.'" +
+    " ELSE 'ธ.ค.'" +
+    " END" +
+    ") AS month_name," +
+    "(" +
+    "CASE " +
+    " WHEN dtl.dtl_type = 1 THEN 'รายรับ'" +
+    " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
+    " ELSE 'รายรับ - รายจ่าย' " +
+    " END" +
+  ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list" +
+    " from `ret_wallet` as w" +
+    " left join `ret_user` as u" +
+    " on w.wall_user_id = u.user_id" +
+    " left join `ret_detail_list` as dtl" +
+    " on w.wall_dtl_id = dtl.dtl_id" +
+    " left join `ret_detail_sub_type` as dts" +
+  " on dtl.dtl_dts_id = dts.dts_id" +
+    " where MONTH(dtl.dtl_date) = " + req.body.dtl_month  +
+    " and " +
+    "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");" 
+
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_wallet (Full option) --------------------------------
+
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
