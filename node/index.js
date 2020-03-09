@@ -114,6 +114,26 @@ app.post("/ret_detail_sub_type", (req, res) => {
 });
 // ---------------- end POST ret_detail_sub_type --------------------------------
 
+// --------------- start POST ret_detail_sub_type_by_dts_id -------------------------------
+app.post("/ret_detail_sub_type_by_dts_id", (req, res) => {
+  let sql = "SELECT * FROM ret_detail_sub_type WHERE dts_id = " + body.dts_id + ";";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_detail_sub_type_by_dts_id --------------------------------
+
+// --------------- start POST ret_detail_sub_type_by_dts_type_id -------------------------------
+app.post("/ret_detail_sub_type_by_dts_type_id", (req, res) => {
+  let sql = "SELECT * FROM ret_detail_sub_type WHERE dts_type_id = " + body.dts_type_id + ";";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST ret_detail_sub_type_by_dts_type_id --------------------------------
+
 // --------------- start POST ret_wallet -------------------------------
 app.post("/ret_wallet", (req, res) => {
   let sql = "SELECT * FROM ret_wallet;";
