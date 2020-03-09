@@ -4,6 +4,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
+const  multipart  =  require('connect-multiparty');
+const  multipartMiddleware  =  multipart({ uploadDir:  './uploads' });
+
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(
@@ -11,6 +14,7 @@ app.use(
     extended: true
   })
 );
+
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
@@ -279,5 +283,13 @@ app.post("/update_ret_user", (req, res) => {
   });
 });
 // ---------------- end POST insert_user --------------------------------
+
+// ---------------- start POST upload file --------------------------------
+app.post('/upload', multipartMiddleware, (req, res) => {
+  res.json({
+      'message': 'File uploaded successfully'
+  });
+});
+// ---------------- end POST upload file --------------------------------
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
