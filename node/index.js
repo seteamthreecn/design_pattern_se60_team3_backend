@@ -4,8 +4,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
-const  multipart  =  require('connect-multiparty');
-const  multipartMiddleware  =  multipart({ uploadDir:  './uploads' });
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart({ uploadDir: './uploads' });
 
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -298,17 +298,35 @@ app.post("/ret_wallet_full_option", (req, res) => {
     " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
     " ELSE 'รายรับ - รายจ่าย' " +
     " END" +
-  ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list" +
+    ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list," +
+    "GROUP_CONCAT(DAY(dtl.dtl_date)) as day_list, " +
+    "GROUP_CONCAT(" +
+    "(CASE " +
+    "WHEN MONTH(dtl.dtl_date) = 1 THEN 'ม.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 2 THEN 'ก.พ.' " +
+    "WHEN MONTH(dtl.dtl_date) = 3 THEN 'มี.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 4 THEN 'เม.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 5 THEN 'พ.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 6 THEN 'มิ.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 7 THEN 'ก.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 8 THEN 'ส.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 9 THEN 'ก.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 10 THEN 'ต.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 11 THEN 'พ.ย.' " +
+    "ELSE 'ธ.ค.'" +
+    "END)" +
+    ") as month_list, " +
+    "GROUP_CONCAT(YEAR(dtl.dtl_date)+543) as year_list" +
     " from `ret_wallet` as w" +
     " left join `ret_user` as u" +
     " on w.wall_user_id = u.user_id" +
     " left join `ret_detail_list` as dtl" +
     " on w.wall_dtl_id = dtl.dtl_id" +
     " left join `ret_detail_sub_type` as dts" +
-  " on dtl.dtl_dts_id = dts.dts_id" +
-    " where MONTH(dtl.dtl_date) = " + req.body.dtl_month  +
+    " on dtl.dtl_dts_id = dts.dts_id" +
+    " where MONTH(dtl.dtl_date) = " + req.body.dtl_month +
     " and " +
-    "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");" 
+    "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");"
 
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -321,7 +339,7 @@ app.post("/ret_wallet_full_option", (req, res) => {
 // ---------------- start POST upload file --------------------------------
 app.post('/upload', multipartMiddleware, (req, res) => {
   res.json({
-      'message': 'File uploaded successfully'
+    'message': 'File uploaded successfully'
   });
 });
 // ---------------- end POST upload file --------------------------------
