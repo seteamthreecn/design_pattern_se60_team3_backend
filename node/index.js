@@ -327,11 +327,17 @@ app.post("/ret_wallet_full_option", (req, res) => {
     " on w.wall_dtl_id = dtl.dtl_id" +
     " left join `ret_detail_sub_type` as dts" +
     " on dtl.dtl_dts_id = dts.dts_id" +
-    " where MONTH(dtl.dtl_date) = " + req.body.dtl_month +
+    " where MONTH(dtl.dtl_date) = " +
+    req.body.dtl_month +
     " and " +
-    " YEAR(dtl.dtl_date) = " + req.body.dtl_year +
+    " YEAR(dtl.dtl_date) = " +
+    req.body.dtl_year +
     " and " +
-    "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");"
+    "IF(" +
+    req.body.dtl_type +
+    " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " +
+    req.body.dtl_type +
+    ");";
 
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -342,13 +348,15 @@ app.post("/ret_wallet_full_option", (req, res) => {
 
 // ---------------- start POST upload file --------------------------------
 app.post("/upload", multipartMiddleware, (req, res) => {
-  var img_name = req.files.uploads[0].path.substring(7);
-  var user_id = +req.files.uploads[0].name;
+  var img_guid = req.files.uploads[0].path.substring(7);
+  var img_data = req.files.uploads[0].name;
+  var img_name = img_data.split("//")[1];
+  var user_id = img_data.split("//")[0];
   let sql =
     "UPDATE `ret_user` SET `user_guid_img`='" +
-    img_name +
+    img_guid +
     "' WHERE `user_id` = " +
-    13 +
+    user_id +
     ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -357,10 +365,18 @@ app.post("/upload", multipartMiddleware, (req, res) => {
 });
 // ---------------- end POST upload file --------------------------------
 
-
 // --------------- start POST insert_ret_detail_list -------------------------------
 app.post("/insert_ret_detail_list", (req, res) => {
-  let sql = "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id) VALUES ('"+ req.body.dtl_amount + "', '"+ req.body.dtl_date + "', '"+ req.body.dtl_type + "', '"+ req.body.dtl_dts_id + "');";
+  let sql =
+    "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id) VALUES ('" +
+    req.body.dtl_amount +
+    "', '" +
+    req.body.dtl_date +
+    "', '" +
+    req.body.dtl_type +
+    "', '" +
+    req.body.dtl_dts_id +
+    "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -370,7 +386,16 @@ app.post("/insert_ret_detail_list", (req, res) => {
 
 // --------------- start POST update_ret_detail_list -------------------------------
 app.post("/update_ret_detail_list", (req, res) => {
-  let sql = "UPDATE ret_detail_list SET (dtl_amount = '"+ req.body.dtl_amount + "', dtl_date = '"+ req.body.dtl_date + "', dtl_type = '"+ req.body.dtl_type + "', dtl_dts_id = '"+ req.body.dtl_dts_id + "');";
+  let sql =
+    "UPDATE ret_detail_list SET (dtl_amount = '" +
+    req.body.dtl_amount +
+    "', dtl_date = '" +
+    req.body.dtl_date +
+    "', dtl_type = '" +
+    req.body.dtl_type +
+    "', dtl_dts_id = '" +
+    req.body.dtl_dts_id +
+    "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -378,10 +403,10 @@ app.post("/update_ret_detail_list", (req, res) => {
 });
 // ---------------- end POST update_ret_detail_list --------------------------------
 
-
 // --------------- start POST delete_ret_detail_list -------------------------------
 app.post("/delete_ret_detail_list", (req, res) => {
-  let sql = "DELETE FROM ret_detail_list WHERE (dtl_id = '"+ req.body.dtl_id + "');";
+  let sql =
+    "DELETE FROM ret_detail_list WHERE (dtl_id = '" + req.body.dtl_id + "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -391,12 +416,17 @@ app.post("/delete_ret_detail_list", (req, res) => {
 
 // --------------- start POST ret_detail_list_by_dtl_id -------------------------------
 app.post("/ret_detail_list_by_dtl_id", (req, res) => {
-  let sql = "SELECT * FROM ret_detail_list WHERE (dtl_id = '"+ req.body.dtl_id + "');";
+  let sql =
+    "SELECT * FROM ret_detail_list WHERE (dtl_id = '" + req.body.dtl_id + "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
   });
 });
 // ---------------- end POST ret_detail_list_by_dtl_id --------------------------------
+
+app.post("/uploads", function(req, res) {
+  res.send(req.files);
+});
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
