@@ -4,8 +4,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
-const  multipart  =  require('connect-multiparty');
-const  multipartMiddleware  =  multipart({ uploadDir:  './uploads' });
+const multipart = require("connect-multiparty");
+const multipartMiddleware = multipart({ uploadDir: "./public" });
 
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -15,7 +15,7 @@ app.use(
   })
 );
 
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
@@ -36,7 +36,7 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE
 });
 
-db.connect(function (err) {
+db.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -112,7 +112,8 @@ app.post("/ret_detail_sub_type", (req, res) => {
 
 // --------------- start POST ret_detail_sub_type_by_dts_id -------------------------------
 app.post("/ret_detail_sub_type_by_dts_id", (req, res) => {
-  let sql = "SELECT * FROM ret_detail_sub_type WHERE dts_id = " + body.dts_id + ";";
+  let sql =
+    "SELECT * FROM ret_detail_sub_type WHERE dts_id = " + body.dts_id + ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -122,7 +123,10 @@ app.post("/ret_detail_sub_type_by_dts_id", (req, res) => {
 
 // --------------- start POST ret_detail_sub_type_by_dts_type_id -------------------------------
 app.post("/ret_detail_sub_type_by_dts_type_id", (req, res) => {
-  let sql = "SELECT * FROM ret_detail_sub_type WHERE dts_type_id = " + body.dts_type_id + ";";
+  let sql =
+    "SELECT * FROM ret_detail_sub_type WHERE dts_type_id = " +
+    body.dts_type_id +
+    ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -149,7 +153,6 @@ app.post("/ret_user", (req, res) => {
   });
 });
 // ---------------- end POST ret_user --------------------------------
-
 
 // --------------- start POST insert_user -------------------------------
 app.post("/insert_user", (req, res) => {
@@ -272,7 +275,6 @@ app.post("/update_ret_user", (req, res) => {
 });
 // ---------------- end POST insert_user --------------------------------
 
-
 // --------------- start POST ret_wallet (Full option) -------------------------------
 app.post("/ret_wallet_full_option", (req, res) => {
   let sql =
@@ -299,17 +301,22 @@ app.post("/ret_wallet_full_option", (req, res) => {
     " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
     " ELSE 'รายรับ - รายจ่าย' " +
     " END" +
-  ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list" +
+    ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list" +
     " from `ret_wallet` as w" +
     " left join `ret_user` as u" +
     " on w.wall_user_id = u.user_id" +
     " left join `ret_detail_list` as dtl" +
     " on w.wall_dtl_id = dtl.dtl_id" +
     " left join `ret_detail_sub_type` as dts" +
-  " on dtl.dtl_dts_id = dts.dts_id" +
-    " where MONTH(dtl.dtl_date) = " + req.body.dtl_month  +
+    " on dtl.dtl_dts_id = dts.dts_id" +
+    " where MONTH(dtl.dtl_date) = " +
+    req.body.dtl_month +
     " and " +
-    "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");" 
+    "IF(" +
+    req.body.dtl_type +
+    " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " +
+    req.body.dtl_type +
+    ");";
 
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -318,11 +325,19 @@ app.post("/ret_wallet_full_option", (req, res) => {
 });
 // ---------------- end POST ret_wallet (Full option) --------------------------------
 
-
 // ---------------- start POST upload file --------------------------------
-app.post('/upload', multipartMiddleware, (req, res) => {
-  res.json({
-      'message': 'File uploaded successfully'
+app.post("/upload", multipartMiddleware, (req, res) => {
+  var img_name = req.files.uploads[0].path.substring(7);
+  var user_id = +req.files.uploads[0].name;
+  let sql =
+    "UPDATE `ret_user` SET `user_guid_img`='" +
+    img_name +
+    "' WHERE `user_id` = " +
+    13 +
+    ";";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
   });
 });
 // ---------------- end POST upload file --------------------------------
