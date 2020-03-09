@@ -326,6 +326,8 @@ app.post("/ret_wallet_full_option", (req, res) => {
     " on dtl.dtl_dts_id = dts.dts_id" +
     " where MONTH(dtl.dtl_date) = " + req.body.dtl_month +
     " and " +
+    " where YEAR(dtl.dtl_date) = " + req.body.dtl_year +
+    " and " +
     "IF(" + req.body.dtl_type + " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " + req.body.dtl_type + ");"
 
   let query = db.query(sql, (err, results) => {
