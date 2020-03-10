@@ -337,7 +337,15 @@ app.post("/ret_wallet_full_option", (req, res) => {
     req.body.dtl_type +
     " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " +
     req.body.dtl_type +
-    ") and w.wall_user_id = " + req.body.wall_user_id +  
+    ")" + 
+    " and " + 
+    "w.wall_user_id = " + req.body.wall_user_id +  
+    // " and " + 
+    // "IF(" +
+    // req.body.dtl_dts_id +
+    // " = null, dtl.dtl_dts_id IN(SELECT dts_id FROM ret_detail_sub_type), dtl.dtl_dts_id = " +
+    // req.body.dtl_dts_id +
+    // ")" + 
     ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
