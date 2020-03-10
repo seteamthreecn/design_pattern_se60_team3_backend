@@ -36,7 +36,7 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE
 });
 
-db.connect(function(err) {
+db.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
 });
@@ -113,7 +113,7 @@ app.post("/ret_detail_sub_type", (req, res) => {
 // --------------- start POST ret_detail_sub_type_by_dts_id -------------------------------
 app.post("/ret_detail_sub_type_by_dts_id", (req, res) => {
   let sql =
-    "SELECT * FROM ret_detail_sub_type WHERE dts_id = " + body.dts_id + ";";
+    "SELECT * FROM ret_detail_sub_type WHERE dts_id = " + req.body.dts_id + ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -124,9 +124,7 @@ app.post("/ret_detail_sub_type_by_dts_id", (req, res) => {
 // --------------- start POST ret_detail_sub_type_by_dts_type_id -------------------------------
 app.post("/ret_detail_sub_type_by_dts_type_id", (req, res) => {
   let sql =
-    "SELECT * FROM ret_detail_sub_type WHERE dts_type_id = " +
-    body.dts_type_id +
-    ";";
+    "SELECT * FROM ret_detail_sub_type WHERE dts_type_id = " + req.body.dts_type_id + ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -297,11 +295,11 @@ app.post("/ret_wallet_full_option", (req, res) => {
     ") AS month_name," +
     "(" +
     "CASE " +
-    " WHEN dtl.dtl_type = 1 THEN 'รายรับ'" +
-    " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
+    " WHEN " + req.body.dtl_type + " = 1 THEN 'รายรับ'" +
+    " WHEN " + req.body.dtl_type + " = 2 THEN 'รายจ่าย'" +
     " ELSE 'รายรับ - รายจ่าย' " +
     " END" +
-    ")as type_list, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list," +
+    ")as type_list, dtl.dtl_type as dtl_type_id, GROUP_CONCAT(dtl.dtl_description) as name_list, GROUP_CONCAT(dtl.dtl_amount) as amount_list, GROUP_CONCAT(dts.dts_name) as sub_type_list," +
     "GROUP_CONCAT(DAY(dtl.dtl_date)) as day_list, " +
     "GROUP_CONCAT(" +
     "(CASE " +
@@ -319,7 +317,9 @@ app.post("/ret_wallet_full_option", (req, res) => {
     "ELSE 'ธ.ค.'" +
     "END)" +
     ") as month_list, " +
-    "GROUP_CONCAT(YEAR(dtl.dtl_date)+543) as year_list" +
+    "GROUP_CONCAT(YEAR(dtl.dtl_date)+543) as year_list," +
+    "GROUP_CONCAT(dtl.dtl_type) as dtl_type_list," +
+    " GROUP_CONCAT(dtl.dtl_id) as id_list" +
     " from `ret_wallet` as w" +
     " left join `ret_user` as u" +
     " on w.wall_user_id = u.user_id" +
@@ -337,8 +337,8 @@ app.post("/ret_wallet_full_option", (req, res) => {
     req.body.dtl_type +
     " = 0, dtl.dtl_type = 1 OR dtl.dtl_type = 2, dtl.dtl_type = " +
     req.body.dtl_type +
-    ");";
-
+    ") and w.wall_user_id = " + req.body.wall_user_id +  
+    ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -368,7 +368,7 @@ app.post("/upload", multipartMiddleware, (req, res) => {
 // --------------- start POST insert_ret_detail_list -------------------------------
 app.post("/insert_ret_detail_list", (req, res) => {
   let sql =
-    "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id) VALUES ('" +
+    "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id, dtl_description) VALUES ('" +
     req.body.dtl_amount +
     "', '" +
     req.body.dtl_date +
@@ -376,6 +376,8 @@ app.post("/insert_ret_detail_list", (req, res) => {
     req.body.dtl_type +
     "', '" +
     req.body.dtl_dts_id +
+    "', '" +
+    req.body.dtl_description +
     "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -387,15 +389,17 @@ app.post("/insert_ret_detail_list", (req, res) => {
 // --------------- start POST update_ret_detail_list -------------------------------
 app.post("/update_ret_detail_list", (req, res) => {
   let sql =
-    "UPDATE ret_detail_list SET (dtl_amount = '" +
+    "UPDATE ret_detail_list SET dtl_amount = '" +
     req.body.dtl_amount +
     "', dtl_date = '" +
     req.body.dtl_date +
-    "', dtl_type = '" +
+    "', dtl_description = '" +
+    req.body.dtl_description +
+    "', dtl_type = " +
     req.body.dtl_type +
-    "', dtl_dts_id = '" +
+    ", dtl_dts_id = " +
     req.body.dtl_dts_id +
-    "');";
+    " WHERE dtl_id = " + req.body.dtl_id + ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -417,7 +421,31 @@ app.post("/delete_ret_detail_list", (req, res) => {
 // --------------- start POST ret_detail_list_by_dtl_id -------------------------------
 app.post("/ret_detail_list_by_dtl_id", (req, res) => {
   let sql =
-    "SELECT * FROM ret_detail_list WHERE (dtl_id = '" + req.body.dtl_id + "');";
+    "SELECT dtl.dtl_id , dtl.dtl_amount, DAY(dtl.dtl_date) as dtl_day, (YEAR(dtl.dtl_date) + 543) as dtl_year, dtl.dtl_dts_id , dtl.dtl_description, dtl.dtl_type, " +
+    "(CASE " +
+    "WHEN MONTH(dtl.dtl_date) = 1 THEN 'ม.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 2 THEN 'ก.พ.' " +
+    "WHEN MONTH(dtl.dtl_date) = 3 THEN 'มี.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 4 THEN 'เม.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 5 THEN 'พ.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 6 THEN 'มิ.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 7 THEN 'ก.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 8 THEN 'ส.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 9 THEN 'ก.ย.' " +
+    "WHEN MONTH(dtl.dtl_date) = 10 THEN 'ต.ค.' " +
+    "WHEN MONTH(dtl.dtl_date) = 11 THEN 'พ.ย.' " +
+    "ELSE 'ธ.ค.'" +
+    "END)" +
+    " as dtl_month, dts.dts_name as dtl_dts_name , dtl.dtl_date , " +
+    "(CASE " +
+    " WHEN dtl.dtl_type = 1 THEN 'รายรับ'" +
+    " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
+    " ELSE 'รายรับ - รายจ่าย' " +
+    " END) as dtl_type_name " +
+    "FROM ret_detail_list as dtl " +
+    "left join `ret_detail_sub_type` as dts " +
+    "on dtl.dtl_dts_id = dts.dts_id " +
+    "WHERE (dtl_id = '" + req.body.dtl_id + "');";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -425,8 +453,38 @@ app.post("/ret_detail_list_by_dtl_id", (req, res) => {
 });
 // ---------------- end POST ret_detail_list_by_dtl_id --------------------------------
 
-app.post("/uploads", function(req, res) {
+app.post("/uploads", function (req, res) {
   res.send(req.files);
 });
+
+// --------------- start POST insert_ret_wallet -------------------------------
+app.post("/insert_ret_wallet", (req, res) => {
+  let sql = "INSERT INTO `ret_wallet` (`wall_user_id`, `wall_dtl_id`) VALUES (" + req.body.wall_user_id + ", " + req.body.wall_dtl_id + ");"
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST insert_ret_wallet --------------------------------
+
+// --------------- start POST get_last_ret_detail_list -------------------------------
+app.post("/get_last_ret_detail_list", (req, res) => {
+  let sql = "SELECT * FROM `ret_detail_list` ORDER BY dtl_id  DESC LIMIT 1"
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST get_last_ret_detail_list --------------------------------
+
+// --------------- start POST delete_ret_wallet -------------------------------
+app.post("/delete_ret_wallet", (req, res) => {
+  let sql = "DELETE FROM `ret_wallet` WHERE wall_dtl_id = " + req.body.wall_dtl_id + ";";
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST delete_ret_wallet --------------------------------
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
