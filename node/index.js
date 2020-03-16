@@ -370,7 +370,7 @@ app.post("/upload", multipartMiddleware, (req, res) => {
 // --------------- start POST insert_ret_detail_list -------------------------------
 app.post("/insert_ret_detail_list", (req, res) => {
   let sql =
-    "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id, dtl_description) VALUES ('" +
+    "INSERT INTO ret_detail_list (dtl_amount, dtl_date, dtl_type, dtl_dts_id, dtl_description, dtl_create_date, dtl_modify_date) VALUES ('" +
     req.body.dtl_amount +
     "', '" +
     req.body.dtl_date +
@@ -380,7 +380,7 @@ app.post("/insert_ret_detail_list", (req, res) => {
     req.body.dtl_dts_id +
     "', '" +
     req.body.dtl_description +
-    "');";
+    "', NOW(), NOW());";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -401,6 +401,7 @@ app.post("/update_ret_detail_list", (req, res) => {
     req.body.dtl_type +
     ", dtl_dts_id = " +
     req.body.dtl_dts_id +
+    ", dtl_modify_date = NOW()" +
     " WHERE dtl_id = " + req.body.dtl_id + ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
@@ -555,7 +556,7 @@ app.post("/ret_detail_list_by_list_type", (req, res) => {
     " and month(dtl_date) = " + req.body.month_value  +  
     " and year(dtl_date) = " + req.body.year_value  +  
     " and wall_user_id = " + req.body.user_id  +  
-    " order by dtl_date desc" ;
+    " order by dtl_date desc, dtl_modify_date desc" ;
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
