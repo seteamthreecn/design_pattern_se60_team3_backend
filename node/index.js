@@ -340,12 +340,6 @@ app.post("/ret_wallet_full_option", (req, res) => {
     ")" + 
     " and " + 
     "w.wall_user_id = " + req.body.wall_user_id +  
-    // " and " + 
-    // "IF(" +
-    // req.body.dtl_dts_id +
-    // " = null, dtl.dtl_dts_id IN(SELECT dts_id FROM ret_detail_sub_type), dtl.dtl_dts_id = " +
-    // req.body.dtl_dts_id +
-    // ")" + 
     ";";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
