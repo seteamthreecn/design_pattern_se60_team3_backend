@@ -424,7 +424,7 @@ app.post("/delete_ret_detail_list", (req, res) => {
 // --------------- start POST ret_detail_list_by_dtl_id -------------------------------
 app.post("/ret_detail_list_by_dtl_id", (req, res) => {
   let sql =
-    "SELECT dtl.dtl_id , dtl.dtl_amount, DAY(dtl.dtl_date) as dtl_day, (YEAR(dtl.dtl_date) + 543) as dtl_year, dtl.dtl_dts_id , dtl.dtl_description, dtl.dtl_type, " +
+    "SELECT dtl.dtl_id , dtl.dtl_amount, DAY(dtl.dtl_date) as dtl_day, YEAR(dtl.dtl_date) as dtl_year, dtl.dtl_dts_id , dtl.dtl_description, dtl.dtl_type, " +
     "(CASE " +
     "WHEN MONTH(dtl.dtl_date) = 1 THEN 'ม.ค.' " +
     "WHEN MONTH(dtl.dtl_date) = 2 THEN 'ก.พ.' " +
@@ -569,7 +569,7 @@ app.post("/ret_detail_list_by_list_type", (req, res) => {
     " ELSE 'ธ.ค.' " + 
     " END" + 
     " ) as month," + 
-    " YEAR(dtl_date) as year, dtl_amount, dtl_type, dtl_description, dts_name," + 
+    " YEAR(dtl_date) as year, dtl_amount, dtl_type, dtl_description, dts_name, dtl_date, " + 
     " (CASE " + 
     " WHEN " + req.body.type_list + " = 1 THEN 'รายรับ'" +
     " WHEN " + req.body.type_list + " = 2 THEN 'รายจ่าย'" +
@@ -586,7 +586,7 @@ app.post("/ret_detail_list_by_list_type", (req, res) => {
     " (CASE " + 
     " WHEN " + req.body.type_list + " = 1 THEN dtl_type = 1 " + 
     " WHEN " + req.body.type_list + " = 2 THEN dtl_type = 2 " + 
-    " ELSE dtl_type BETWEEN 1 AND 2 " + 
+    " ELSE dtl_type = 1 OR dtl_type =  2 " + 
     " END) " + 
     " and month(dtl_date) = " + req.body.month_value  +  
     " and year(dtl_date) = " + req.body.year_value  +  
@@ -598,5 +598,46 @@ app.post("/ret_detail_list_by_list_type", (req, res) => {
   });
 });
 // ---------------- end POST ret_detail_list_by_list_type --------------------------------
+
+// --------------- start POST distinct_ret_detail_list_by_list_type -------------------------------
+app.post("/distinct_ret_detail_list_by_list_type", (req, res) => {
+  let sql = 
+    " select DISTINCT(dtl_date) as date_data, DAY(dtl_date) as day, " + 
+    " ( " + 
+    " CASE " + 
+    " WHEN MONTH(dtl_date) = 1 THEN 'ม.ค.' " + 
+    " WHEN MONTH(dtl_date) = 2 THEN 'ก.พ.' " + 
+    " WHEN MONTH(dtl_date) = 3 THEN 'มี.ค.' " + 
+    " WHEN MONTH(dtl_date) = 4 THEN 'เม.ย.' " + 
+    " WHEN MONTH(dtl_date) = 5 THEN 'พ.ค.' " + 
+    " WHEN MONTH(dtl_date) = 6 THEN 'มิ.ย.' " + 
+    " WHEN MONTH(dtl_date) = 7 THEN 'ก.ค.' " + 
+    " WHEN MONTH(dtl_date) = 8 THEN 'ส.ค.' " + 
+    " WHEN MONTH(dtl_date) = 9 THEN 'ก.ย.' " + 
+    " WHEN MONTH(dtl_date) = 10 THEN 'ต.ค.' " + 
+    " WHEN MONTH(dtl_date) = 11 THEN 'พ.ย.' " + 
+    " ELSE 'ธ.ค.' " + 
+    " END" + 
+    " ) as month," + 
+    " YEAR(dtl_date) as year " +
+    " from `ret_detail_list`" +  
+    " inner join `ret_wallet` " + 
+    " on dtl_id = wall_dtl_id " + 
+    " where " + 
+    " (CASE " + 
+    " WHEN " + req.body.type_list + " = 1 THEN dtl_type = 1 " + 
+    " WHEN " + req.body.type_list + " = 2 THEN dtl_type = 2 " + 
+    " ELSE dtl_type = 1 OR dtl_type =  2 " + 
+    " END) " + 
+    " and month(dtl_date) = " + req.body.month_value  +  
+    " and year(dtl_date) = " + req.body.year_value  +  
+    " and wall_user_id = " + req.body.user_id  +  
+    " order by dtl_date desc , dtl_modify_date desc" ;
+  let query = db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+// ---------------- end POST distinct_ret_detail_list_by_list_type --------------------------------
 
 //-------------------------------------------------------- end POST ------------------------------------------------------------------
