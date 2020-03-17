@@ -460,9 +460,29 @@ app.post("/ret_detail_list_by_dtl_id", (req, res) => {
 app.post("/ret_detail_list_static_month", (req, res) => {
   // console.log(req.body.user_id);
   let sql =
-    "SELECT MONTH(dtl.dtl_date) AS month_name, (CASE WHEN dtl.dtl_type = 1 THEN 'รายรับ' ELSE 'รายจ่าย' END )as type_list,SUM(dtl.dtl_amount) as amount FROM `ret_detail_list` as dtl LEFT JOIN ret_wallet as wall ON dtl.dtl_id = wall.wall_dtl_id WHERE wall.wall_user_id = '" +
-    req.body.user_id +
-    "' GROUP BY MONTH(dtl.dtl_date),type_list ORDER by MONTH(dtl.dtl_date),dtl_type";
+      "SELECT " + 
+      "(" +
+      "CASE " +
+      "WHEN MONTH(dtl.dtl_date) = 1 THEN 'มกราคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 2 THEN 'กุมภาพันธ์' " +
+      "WHEN MONTH(dtl.dtl_date) = 3 THEN 'มีนาคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 4 THEN 'เมษายน' " +
+      "WHEN MONTH(dtl.dtl_date) = 5 THEN 'พฤษภาคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 6 THEN 'มิถุนายน' " +
+      "WHEN MONTH(dtl.dtl_date) = 7 THEN 'กรกฎาคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 8 THEN 'สิงหาคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 9 THEN 'กันยายน' " +
+      "WHEN MONTH(dtl.dtl_date) = 10 THEN 'ตุลาคม' " +
+      "WHEN MONTH(dtl.dtl_date) = 11 THEN 'พฤศจิกายน' " +
+      "ELSE 'ธันวาคม' " +
+      "END) AS month_name, " +
+      "MONTH(dtl.dtl_date) AS month, (CASE WHEN dtl.dtl_type = 1 THEN 'รายรับ' ELSE 'รายจ่าย' END )as type_list,SUM(dtl.dtl_amount) as amount " +
+      " FROM `ret_detail_list` as dtl LEFT JOIN ret_wallet as wall ON dtl.dtl_id = wall.wall_dtl_id " +
+      " WHERE wall.wall_user_id = " + req.body.user_id +
+      " and MONTH(dtl.dtl_date) = " + req.body.month +
+      " and year(dtl.dtl_date) = " + req.body.year +
+      " GROUP BY MONTH(dtl.dtl_date),type_list" +
+      " ORDER by MONTH(dtl.dtl_date),dtl_type";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
@@ -490,7 +510,8 @@ app.post("/ret_detail_list_static_year", (req, res) => {
   let sql =
     "SELECT YEAR(dtl.dtl_date) AS YEAR,  (CASE WHEN dtl.dtl_type = 1 THEN 'รายรับ' ELSE 'รายจ่าย' END )as type_list,SUM(dtl.dtl_amount) as amount FROM `ret_detail_list` as dtl LEFT JOIN ret_wallet as wall ON dtl.dtl_id = wall.wall_dtl_id WHERE wall.wall_user_id = '" +
     req.body.user_id +
-    "' GROUP BY YEAR,type_list ORDER by YEAR,dtl_type";
+    "' AND YEAR(dtl.dtl_date) = " +  req.body.year +
+    " GROUP BY YEAR,type_list ORDER by YEAR,dtl_type";
   let query = db.query(sql, (err, results) => {
     if (err) throw err;
     res.json(results);
