@@ -439,7 +439,7 @@ app.post("/ret_detail_list_by_dtl_id", (req, res) => {
     "WHEN MONTH(dtl.dtl_date) = 11 THEN 'พ.ย.' " +
     "ELSE 'ธ.ค.'" +
     "END)" +
-    " as dtl_month, dts.dts_name as dtl_dts_name , dtl.dtl_date , " +
+    " as dtl_month, MONTH(dtl.dtl_date) as dtl_month_number, dtl_date, dts.dts_name as dtl_dts_name , dtl.dtl_date , " +
     "(CASE " +
     " WHEN dtl.dtl_type = 1 THEN 'รายรับ'" +
     " WHEN dtl.dtl_type = 2 THEN 'รายจ่าย'" +
@@ -586,7 +586,7 @@ app.post("/ret_detail_list_by_list_type", (req, res) => {
     " (CASE " + 
     " WHEN " + req.body.type_list + " = 1 THEN dtl_type = 1 " + 
     " WHEN " + req.body.type_list + " = 2 THEN dtl_type = 2 " + 
-    " ELSE dtl_type = 1 OR dtl_type =  2 " + 
+    " ELSE (dtl_type = 1 OR dtl_type =  2) " + 
     " END) " + 
     " and month(dtl_date) = " + req.body.month_value  +  
     " and year(dtl_date) = " + req.body.year_value  +  
@@ -627,7 +627,7 @@ app.post("/distinct_ret_detail_list_by_list_type", (req, res) => {
     " (CASE " + 
     " WHEN " + req.body.type_list + " = 1 THEN dtl_type = 1 " + 
     " WHEN " + req.body.type_list + " = 2 THEN dtl_type = 2 " + 
-    " ELSE dtl_type = 1 OR dtl_type =  2 " + 
+    " ELSE (dtl_type = 1 OR dtl_type =  2) " + 
     " END) " + 
     " and month(dtl_date) = " + req.body.month_value  +  
     " and year(dtl_date) = " + req.body.year_value  +  
